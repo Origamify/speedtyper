@@ -52,17 +52,8 @@ body {
 }
 
 .incorrect {
-    position: relative;
-}
-
-.incorrect .typed-char {
-    color: #FF5555;
+    color: #CC7F2C;
     font-weight: bold;
-}
-
-.incorrect .target-char {
-    opacity: 0.2;
-    margin-left: 2px;
 }
 
 #typing-area p span:not(.correct):not(.incorrect) {

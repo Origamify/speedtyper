@@ -108,7 +108,7 @@ const Game = (() => {
         const accuracy = Utils.calculateAccuracy(correctChars, inputVal.length);
 
         UI.updateStats(wpm, accuracy);
-        UI.showMessage('Done! Press Space, Enter, or Escape to restart');
+        UI.showMessage('Done! Press Space or Enter to restart');
     }
 
     /**

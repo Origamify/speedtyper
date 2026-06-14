@@ -71,7 +71,7 @@ const UI = (() => {
                 } else {
                     span.className = 'incorrect';
                     const typed = inputChars[index] === ' ' ? '_' : inputChars[index];
-                    span.innerHTML = `<span class="typed-char">${typed}</span><span class="target-char">${char}</span>`;
+                    span.textContent = typed;
                 }
             } else {
                 span.className = '';

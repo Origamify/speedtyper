@@ -5,17 +5,8 @@ document.addEventListener('keydown', () => {
     }
 });
 
-// Restart on Space/Enter or abort on Escape after game ends
+// Restart on Space/Enter after game ends
 document.addEventListener('keydown', (e) => {
-    if (e.code === 'Escape') {
-        e.preventDefault();
-        const state = Game.getState();
-        if (state.roundComplete) {
-            Game.startNewRound();
-        }
-        return;
-    }
-
     if (e.code === 'Space' || e.code === 'Enter') {
         e.preventDefault();
         const state = Game.getState();
