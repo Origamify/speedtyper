@@ -9,6 +9,10 @@ A minimalist, distraction-free speed typing practice app — zero dependencies, 
 - **Visual feedback**: Correct characters turn white; errors highlighted in red.
 - **Curated text library**: Pangrams, quotes, and programming wisdom for varied practice.
 
+## Demo
+
+Try it live: [origamify.github.io/speedtyper](https://origamify.github.io/speedtyper/)
+
 ## Usage
 
 1. Open `index.html` in a modern browser.
