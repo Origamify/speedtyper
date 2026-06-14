@@ -40,6 +40,9 @@ const Game = (() => {
         state.targetText = state.words[Math.floor(Math.random() * state.words.length)];
         UI.renderTargetText(state.targetText);
         resetGameState();
+        Array.from(UI.elements.targetText.children).forEach(span => {
+            span.className = '';
+        });
     }
 
     /**
@@ -69,6 +72,8 @@ const Game = (() => {
      * @param {string} inputVal - The current value of the user input field.
      */
     function handleInput(inputVal) {
+        if (state.roundComplete) return;
+
         if (!state.isPlaying) {
             startGame();
         }
@@ -103,7 +108,7 @@ const Game = (() => {
         const accuracy = Utils.calculateAccuracy(correctChars, inputVal.length);
 
         UI.updateStats(wpm, accuracy);
-        UI.showMessage(`Done! Press Space or Enter to restart`);
+        UI.showMessage('Done! Press Space, Enter, or Escape to restart');
     }
 
     /**

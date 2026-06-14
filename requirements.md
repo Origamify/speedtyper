@@ -6,9 +6,9 @@ A minimalist, client-side speed typing web application focused on distraction-fr
 ## Functional Requirements
 
 ### Word Management
-* **Word Source**: Text content must be loaded from a local `typer_lines.json` file via `fetch`.
-* **Data Format**: The JSON file shall contain an array of strings (e.g., `["word", "sentence"]`).
-* **Error Handling**: If `typer_lines.json` fails to load, the app should display a fallback message or a default set of words.
+* **Word Source**: Text content must be loaded from inline data (JavaScript array) — no external file loading.
+* **Data Format**: The data shall contain an array of strings (e.g., `["word", "sentence"]`).
+* **Error Handling**: If data is empty or invalid, the app should display a fallback message.
 
 ### Typing Engine
 * **Input Tracking**: The engine must track user keystrokes in real-time against the target text.
@@ -46,7 +46,8 @@ A minimalist, client-side speed typing web application focused on distraction-fr
 * **Layout**: The typing area and statistics must be centered both vertically and horizontally on the viewport.
 
 ## Non-Functional Requirements
-* **Platform**: Pure client-side implementation using vanilla HTML5, CSS3, and JavaScript (ES6+).
+* **Platform**: Pure client-side implementation using vanilla HTML5, CSS3, and JavaScript. No ES modules (`import`/`export`) — all code uses IIFE/globals for compatibility.
+* **Serverless**: Must work by opening `index.html` directly in a browser from the filesystem (no HTTP server required). No `fetch`, no external dependencies.
 * **Performance**: Near-zero latency between keystroke and visual update.
 * **Dependencies**: Zero external libraries or frameworks.
 
@@ -60,5 +61,5 @@ A minimalist, client-side speed typing web application focused on distraction-fr
 ```
 
 ## Constraints
-* Must run in any modern web browser without a local web server (if using absolute paths) or via a simple local server for `fetch` support.
+* Must run by opening `index.html` directly in any modern web browser — no HTTP server, no build step, no dependencies.
 * No backend or database required.
