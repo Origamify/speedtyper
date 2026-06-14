@@ -77,6 +77,14 @@ export function handleInput(inputVal) {
 
     ui.highlightInput(state.targetText, inputVal);
 
+    // Update live stats
+    const elapsed = (Date.now() - state.startTime) / 1000;
+    const correctChars = inputVal.split('').filter((c, i) => c === state.targetText[i]).length;
+    ui.updateStats(
+        utils.calculateWPM(inputVal.length, elapsed),
+        utils.calculateAccuracy(correctChars, inputVal.length)
+    );
+
     // Check if finished (for Commit 4)
     if (inputVal.length >= state.targetText.length) {
         endGame();
@@ -88,7 +96,15 @@ export function handleInput(inputVal) {
  */
 export function endGame() {
     state.isPlaying = false;
-    // TODO: Implement Commit 4: Statistics & Game Completion
+    const elapsed = (Date.now() - state.startTime) / 1000;
+    const inputVal = ui.elements.userInput.value;
+    const correctChars = inputVal.split('').filter((c, i) => c === state.targetText[i]).length;
+
+    const wpm = utils.calculateWPM(inputVal.length, elapsed);
+    const accuracy = utils.calculateAccuracy(correctChars, inputVal.length);
+
+    ui.updateStats(wpm, accuracy);
+    ui.showMessage(`Done! Press Space or Enter to restart`);
 }
 
 /**
