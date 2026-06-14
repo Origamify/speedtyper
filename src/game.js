@@ -59,6 +59,16 @@ const Game = (() => {
     }
 
     /**
+     * Checks if the last typed character matches the target.
+     * @param {string} inputVal - The current user input.
+     * @param {string} targetText - The full target string.
+     * @returns {boolean}
+     */
+    function isLastCharCorrect(inputVal, targetText) {
+        return inputVal[inputVal.length - 1] === targetText[targetText.length - 1];
+    }
+
+    /**
      * Starts the timer and game play.
      */
     function startGame() {
@@ -88,9 +98,15 @@ const Game = (() => {
             Utils.calculateAccuracy(correctChars, inputVal.length)
         );
 
-        // Check if finished (for Commit 4)
-        if (inputVal.length >= state.targetText.length) {
+        // End conditions:
+        // 1) over-typed → end immediately
+        // 2) reached target length → check if last char was correct
+        if (inputVal.length > state.targetText.length) {
             endGame();
+        } else if (inputVal.length === state.targetText.length) {
+            if (isLastCharCorrect(inputVal, state.targetText)) {
+                endGame();
+            }
         }
     }
 
