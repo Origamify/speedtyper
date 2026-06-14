@@ -8,9 +8,9 @@ document.addEventListener('keydown', () => {
 // Restart on Space/Enter after game ends
 document.addEventListener('keydown', (e) => {
     if (e.code === 'Space' || e.code === 'Enter') {
-        e.preventDefault();
         const state = Game.getState();
         if (state.roundComplete) {
+            e.preventDefault();
             Game.startNewRound();
         }
     }
