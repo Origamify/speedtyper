@@ -1,0 +1,56 @@
+body {
+    background-color: #333333;
+    color: #AAAAAA;
+    font-family: 'Courier New', Courier, monospace;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+}
+
+#game-container {
+    text-align: center;
+    max-width: 600px;
+    width: 90%;
+}
+
+#stats {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-around;
+}
+
+#typing-area {
+    position: relative;
+    font-size: 2rem;
+    min-height: 3rem;
+}
+
+#target-text {
+    margin: 0;
+    line-height: 1.5;
+    word-wrap: break-word;
+}
+
+#user-input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+#message {
+    margin-top: 2rem;
+    font-size: 1rem;
+    color: #888888;
+}
+
+.correct {
+    color: #FFFFFF;
+}
+
+.incorrect {
+    color: #FF5555;
+}
