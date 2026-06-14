@@ -51,13 +51,14 @@ A minimalist, client-side speed typing web application focused on distraction-fr
 * **Performance**: Near-zero latency between keystroke and visual update.
 * **Dependencies**: Zero external libraries or frameworks.
 
-## Data Structure (`typer_lines.json`)
-```json
-[
-  "the quick brown fox",
-  "jumps over the lazy dog",
-  "minimalist design is key"
-]
+## Data Source (`typer_lines.js`)
+External JS file defining `TYPER_LINES` as a global array of strings:
+```js
+const TYPER_LINES = [
+    "the quick brown fox jumps over the lazy dog",
+    "pack my box with five dozen liquor jugs",
+    "minimalist design is key"
+];
 ```
 
 ## Constraints

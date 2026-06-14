@@ -14,13 +14,13 @@ Create a minimalist, client-side speed typing web application.
 
 **Commit 1: Project Scaffolding & Data Setup**
 * [x] Create `index.html`, `style.css`, `script.js`.
-* [x] Create `typer_lines.json` with sample text.
+* [x] Create `typer_lines.js` with sample text data (`TYPER_LINES` global array).
 * **Verification**: Open `index.html` in a browser and check DevTools Console for 404 errors or syntax issues.
 
-**Commit 1b: Serverless Migration**
-* [ ] Convert all ES modules (`import`/`export`) to IIFE pattern exposing globals on `window`.
-* [ ] Inline word data from JSON into JS (replace `fetch` with inline array).
-* [ ] Fix script load order in HTML (no module type needed).
+**Commit 1b: Serverless Setup**
+* [x] Use vanilla JS with IIFE/globals — no ES modules.
+* [x] Load `typer_lines.js` as a regular script (no `fetch`, no external dependencies).
+* [ ] Ensure script load order in HTML is correct.
 * **Verification**: Open `index.html` directly from the filesystem — no server, no console errors.
 
 **Commit 2: Initial UI & Inline Data Rendering**
@@ -42,7 +42,7 @@ Create a minimalist, client-side speed typing web application.
 
 **Commit 5: Restart Logic & Game Loop**
 * [x] Implement `Space`/`Enter` listener for the `RESULTS` state.
-* [x] Reset game state and fetch next text segment.
+* [x] Reset game state and select next text segment from `TYPER_LINES`.
 * **Verification**: Press `Space` or `Enter` after stats are displayed to ensure a new word is loaded and the UI resets.
 
 **Commit 6: UI Polish & Styling**
