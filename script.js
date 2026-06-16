@@ -1,3 +1,8 @@
+// Count every keystroke for accuracy tracking
+document.addEventListener('keydown', (e) => {
+    Game.onKeyDown(e);
+});
+
 // Ensure input has focus when starting
 document.addEventListener('keydown', () => {
     if (document.activeElement !== UI.elements.userInput) {

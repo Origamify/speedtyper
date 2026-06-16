@@ -12,7 +12,9 @@ const Game = (() => {
         errors: 0,
         totalTyped: 0,
         isPlaying: false,
-        roundComplete: false
+        roundComplete: false,
+        totalKeystrokes: 0,
+        correctKeystrokes: 0
     };
 
     /**
@@ -54,6 +56,8 @@ const Game = (() => {
         state.errors = 0;
         state.totalTyped = 0;
         state.isPlaying = false;
+        state.totalKeystrokes = 0;
+        state.correctKeystrokes = 0;
         UI.updateStats(0, 100);
         UI.showMessage('Press any key to start');
     }
@@ -66,6 +70,30 @@ const Game = (() => {
      */
     function isLastCharCorrect(inputVal, targetText) {
         return inputVal[inputVal.length - 1] === targetText[targetText.length - 1];
+    }
+
+    /**
+     * Counts every keystroke (including backspaces and corrections).
+     * @param {KeyboardEvent} e
+     */
+    function onKeyDown(e) {
+        if (state.roundComplete) return;
+
+        const inputVal = UI.elements.userInput.value;
+
+        if (e.key === 'Backspace') {
+            state.totalKeystrokes++;
+            return;
+        }
+
+        // Only count printable characters
+        if (e.key.length !== 1) return;
+
+        state.totalKeystrokes++;
+        const pos = inputVal.length;
+        if (pos < state.targetText.length && e.key === state.targetText[pos]) {
+            state.correctKeystrokes++;
+        }
     }
 
     /**
@@ -92,10 +120,9 @@ const Game = (() => {
 
         // Update live stats
         const elapsed = (Date.now() - state.startTime) / 1000;
-        const correctChars = inputVal.split('').filter((c, i) => c === state.targetText[i]).length;
         UI.updateStats(
             Utils.calculateWPM(inputVal.length, elapsed),
-            Utils.calculateAccuracy(correctChars, inputVal.length)
+            Utils.calculateAccuracy(state.correctKeystrokes, state.totalKeystrokes)
         );
 
         // End conditions:
@@ -118,10 +145,9 @@ const Game = (() => {
         state.isPlaying = false;
         const elapsed = (Date.now() - state.startTime) / 1000;
         const inputVal = UI.elements.userInput.value;
-        const correctChars = inputVal.split('').filter((c, i) => c === state.targetText[i]).length;
 
         const wpm = Utils.calculateWPM(inputVal.length, elapsed);
-        const accuracy = Utils.calculateAccuracy(correctChars, inputVal.length);
+        const accuracy = Utils.calculateAccuracy(state.correctKeystrokes, state.totalKeystrokes);
 
         UI.updateStats(wpm, accuracy);
         UI.showMessage('Done! Press Space or Enter to restart');
@@ -138,6 +164,7 @@ const Game = (() => {
         loadWords,
         startNewRound,
         handleInput,
+        onKeyDown,
         getState
     };
 })();

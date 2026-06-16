@@ -25,7 +25,7 @@ A minimalist, client-side speed typing web application focused on distraction-fr
 
 ### Statistics Calculation
 * **WPM (Words Per Minute)**: Calculated as `(Total Characters / 5) / Time in Minutes`.
-* **Accuracy**: Calculated as `(Correct Keystrokes / Total Keystrokes) * 100%`.
+* **Accuracy**: Calculated as `(Correct Keystrokes / Total Keystrokes) * 100%`. Every keystroke is counted, including backspaces and corrections. Example: typing `a`, backspacing, then typing `b` on target `ab` counts 3 total keystrokes (1 correct + 2 errors).
 * **Display**: Results must be shown clearly on the screen once a segment is finished.
 
 ### Restart Mechanism
