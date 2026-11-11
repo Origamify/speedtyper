@@ -18,9 +18,25 @@ body {
 
 #stats {
     font-size: 1.5rem;
-    margin-bottom: 2rem;
+    margin-top: 1.5rem;
     display: flex;
     justify-content: space-around;
+}
+
+/* --- Completed-line history: Star Wars-style crawl into the distance --- */
+#history {
+    height: 32rem;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.history-line {
+    margin: 0;
+    font-size: 1.2rem;
+    line-height: 1.8;
 }
 
 #typing-area {
@@ -42,7 +58,7 @@ body {
 }
 
 #message {
-    margin-top: 2rem;
+    margin-top: 1rem;
     font-size: 1rem;
     color: #888888;
 }
@@ -52,10 +68,17 @@ body {
 }
 
 .incorrect {
-    color: #CC7F2C;
-    font-weight: bold;
+    color: #FF5555;
 }
 
-#typing-area p span:not(.correct):not(.incorrect) {
+/* Extra-space indicator: red bar at baseline, one monospace cell wide */
+.space-bar {
+    display: inline-block;
+    width: 1ch;
+    height: 0.2em;
+    background-color: #FF5555;
+}
+
+#target-text span:not(.correct):not(.incorrect) {
     opacity: 0.3;
 }

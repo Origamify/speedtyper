@@ -8,20 +8,20 @@
 </head>
 <body>
     <div id="game-container">
+        <div id="history"></div>
+        <div id="typing-area">
+            <p id="target-text"></p>
+            <input type="text" id="user-input" autocomplete="off">
+        </div>
         <div id="stats">
             <span>WPM: <span id="wpm">0</span></span>
             <span>Accuracy: <span id="accuracy">100</span>%</span>
         </div>
-        <div id="typing-area">
-            <p id="target-text"></p>
-            <input type="text" id="user-input" autofocus autocomplete="off">
-        </div>
         <div id="message">Press any key to start</div>
     </div>
-    <script src="typer_lines.js"></script>
+    <script src="src/typer_lines.js"></script>
     <script src="src/utils.js"></script>
     <script src="src/ui.js"></script>
     <script src="src/game.js"></script>
-    <script src="script.js"></script>
 </body>
 </html>

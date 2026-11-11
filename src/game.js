@@ -1,156 +1,149 @@
 /**
- * Game Module - Core game logic.
+ * Game Module - Core game logic, state machine and event wiring.
+ * Depends on: TYPER_LINES (data), UI (rendering), Utils (calculations).
+ * Load after ui.js and utils.js.
  */
 const Game = (() => {
     'use strict';
 
-    // Game state
-    let state = {
+    // --- Game state ---
+    const state = {
         targetText: '',
-        words: [],
         startTime: null,
-        errors: 0,
-        totalTyped: 0,
         isPlaying: false,
         roundComplete: false,
         totalKeystrokes: 0,
         correctKeystrokes: 0
     };
 
-    /**
-     * Loads words from the JSON file.
-     */
-    function loadWords() {
-        state.words = TYPER_LINES;
-        if (state.words.length === 0) {
-            console.error('No words found');
-            UI.elements.targetText.textContent = 'Failed to load words. Please try again later.';
-            UI.showMessage('Error loading data.');
-            return;
-        }
-        startNewRound();
+    // --- Data validation (fallback) ---
+    function isValidLines(lines) {
+        return Array.isArray(lines) && lines.length > 0 &&
+            lines.every(line => typeof line === 'string' && line.length > 0);
     }
 
     /**
-     * Starts a new round of typing.
+     * Picks a random target text and resets state + UI for a new round.
      */
     function startNewRound() {
-        if (state.words.length === 0) return;
-
+        // The previous line only leaves once the user moves on
+        if (state.targetText) UI.archiveLine(state.targetText);
+        state.targetText = TYPER_LINES[Math.floor(Math.random() * TYPER_LINES.length)];
         state.roundComplete = false;
-        // Pick a random word/sentence from the array
-        state.targetText = state.words[Math.floor(Math.random() * state.words.length)];
-        UI.renderTargetText(state.targetText);
-        resetGameState();
-        Array.from(UI.elements.targetText.children).forEach(span => {
-            span.className = '';
-        });
-    }
-
-    /**
-     * Resets the game state and UI for a new round.
-     */
-    function resetGameState() {
-        UI.elements.userInput.value = '';
         state.startTime = null;
-        state.errors = 0;
-        state.totalTyped = 0;
         state.isPlaying = false;
         state.totalKeystrokes = 0;
         state.correctKeystrokes = 0;
-        UI.updateStats(0, 100);
-        UI.showMessage('Press any key to start');
+        UI.renderTargetText(state.targetText);
+        UI.resetUI();
+        UI.elements.userInput.focus();
     }
 
     /**
-     * Checks if the last typed character matches the target.
-     * @param {string} inputVal - The current user input.
-     * @param {string} targetText - The full target string.
-     * @returns {boolean}
-     */
-    function isLastCharCorrect(inputVal, targetText) {
-        return inputVal[inputVal.length - 1] === targetText[targetText.length - 1];
-    }
-
-    /**
-     * Counts every keystroke (including backspaces and corrections).
-     * @param {KeyboardEvent} e
-     */
-    function onKeyDown(e) {
-        if (state.roundComplete) return;
-
-        const inputVal = UI.elements.userInput.value;
-
-        if (e.key === 'Backspace') {
-            state.totalKeystrokes++;
-            return;
-        }
-
-        // Only count printable characters
-        if (e.key.length !== 1) return;
-
-        state.totalKeystrokes++;
-        const pos = inputVal.length;
-        if (pos < state.targetText.length && e.key === state.targetText[pos]) {
-            state.correctKeystrokes++;
-        }
-    }
-
-    /**
-     * Starts the timer and game play.
-     */
-    function startGame() {
-        state.isPlaying = true;
-        state.startTime = Date.now();
-        UI.showMessage('');
-    }
-
-    /**
-     * Handles character input and updates state/UI.
-     * @param {string} inputVal - The current value of the user input field.
-     */
-    function handleInput(inputVal) {
-        if (state.roundComplete) return;
-
-        if (!state.isPlaying) {
-            startGame();
-        }
-
-        UI.highlightInput(state.targetText, inputVal);
-
-        // Update live stats
-        const elapsed = (Date.now() - state.startTime) / 1000;
-        UI.updateStats(
-            Utils.calculateWPM(inputVal.length, elapsed),
-            Utils.calculateAccuracy(state.correctKeystrokes, state.totalKeystrokes)
-        );
-
-        // End conditions:
-        // 1) over-typed → end immediately
-        // 2) reached target length → check if last char was correct
-        if (inputVal.length > state.targetText.length) {
-            endGame();
-        } else if (inputVal.length === state.targetText.length) {
-            if (isLastCharCorrect(inputVal, state.targetText)) {
-                endGame();
-            }
-        }
-    }
-
-    /**
-     * Ends the game and displays results.
+     * Ends the round and displays the final stats.
      */
     function endGame() {
         state.roundComplete = true;
         state.isPlaying = false;
         const elapsed = (Date.now() - state.startTime) / 1000;
         const inputVal = UI.elements.userInput.value;
+        UI.updateStats(
+            Utils.calculateWPM(inputVal.length, elapsed),
+            Utils.calculateAccuracy(state.correctKeystrokes, state.totalKeystrokes)
+        );
+        UI.showMessage('Press Space or Enter to restart');
+    }
 
-        const wpm = Utils.calculateWPM(inputVal.length, elapsed);
-        const accuracy = Utils.calculateAccuracy(state.correctKeystrokes, state.totalKeystrokes);
+    /**
+     * Handles character input: highlight, live stats, end conditions.
+     */
+    function handleInput() {
+        if (state.roundComplete) return;
 
-        UI.updateStats(wpm, accuracy);
-        UI.showMessage('Done! Press Space or Enter to restart');
+        const inputVal = UI.elements.userInput.value;
+        UI.highlightInput(state.targetText, inputVal);
+
+        // Live stats only while TYPING (startTime is set by the first keypress)
+        if (!state.isPlaying) return;
+
+        const elapsed = (Date.now() - state.startTime) / 1000;
+        UI.updateStats(
+            Utils.calculateWPM(inputVal.length, elapsed),
+            Utils.calculateAccuracy(state.correctKeystrokes, state.totalKeystrokes)
+        );
+
+        // RESULTS: over-typed, or reached target length with a correct last char
+        const lastCharCorrect = inputVal.length === state.targetText.length &&
+            inputVal[inputVal.length - 1] === state.targetText[state.targetText.length - 1];
+        if (inputVal.length > state.targetText.length || lastCharCorrect) {
+            endGame();
+        }
+    }
+
+    /**
+     * Document keydown: restart, IDLE -> TYPING transition, keystroke counting.
+     * @param {KeyboardEvent} e
+     */
+    function onKeyDown(e) {
+        // Ignore modifier shortcuts (Ctrl+C, Cmd+A, ...) — they are not typing.
+        // Exception: AltGr reports ctrlKey+altKey but still inserts a real
+        // character on European layouts — let it through.
+        if ((e.ctrlKey || e.metaKey || e.altKey) && !e.getModifierState?.('AltGraph')) return;
+
+        // RESULTS: Space/Enter restarts the round
+        if (state.roundComplete) {
+            if (e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                startNewRound();
+            }
+            return;
+        }
+
+        // IDLE -> TYPING on the first printable keypress
+        if (!state.isPlaying && e.key.length === 1) {
+            state.isPlaying = true;
+            state.startTime = Date.now();
+            UI.showMessage('');
+        }
+
+        // Count every keystroke (backspaces included)
+        if (e.key === 'Backspace') {
+            state.totalKeystrokes++;
+            return;
+        }
+        if (e.key.length !== 1) return;
+
+        state.totalKeystrokes++;
+        const pos = UI.elements.userInput.value.length;
+        if (pos < state.targetText.length && e.key === state.targetText[pos]) {
+            state.correctKeystrokes++;
+        }
+    }
+
+    /**
+     * Wires DOM events and starts the first round. Runs at script load.
+     */
+    function init() {
+        if (!isValidLines(typeof TYPER_LINES !== 'undefined' ? TYPER_LINES : undefined)) {
+            UI.elements.targetText.textContent = 'Failed to load typing lines.';
+            UI.showMessage('Error loading data.');
+            return;
+        }
+
+        document.addEventListener('keydown', onKeyDown);
+        UI.elements.userInput.addEventListener('input', handleInput);
+
+        // Anti-cheat: stats must come from real keystrokes only
+        for (const evt of ['paste', 'drop']) {
+            UI.elements.userInput.addEventListener(evt, e => e.preventDefault());
+        }
+
+        // Focus management: keep the hidden input focused
+        UI.elements.userInput.addEventListener('blur', () => {
+            setTimeout(() => UI.elements.userInput.focus(), 0);
+        });
+
+        startNewRound();
     }
 
     /**
@@ -160,13 +153,8 @@ const Game = (() => {
         return { ...state };
     }
 
-    return {
-        loadWords,
-        startNewRound,
-        handleInput,
-        onKeyDown,
-        getState
-    };
+    return { startNewRound, handleInput, onKeyDown, init, getState };
 })();
 
 window.Game = Game;
+Game.init();
